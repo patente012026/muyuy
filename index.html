@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="es" data-theme="light" class="portada">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(function(){var a={};try{a=JSON.parse(localStorage.getItem("muyuy-ajustes"))||{}}catch(e){}window.MUYUY_AJ=a;["letra","contraste","legible"].forEach(function(k){if(a[k])document.documentElement.setAttribute("data-"+k,a[k])})})();</script>
+<!-- siempre en modo claro, igual en el celular y la laptop (ni el modo oscuro del equipo ni el de Chrome cambian los colores) -->
+<meta name="color-scheme" content="only light">
+<!-- un enlace con #prioridades o #parcela hacía saltar la página a esa parte al abrir, sin mostrar el inicio de la chacra:
+     se quita la marca antes de que el navegador baje (app.js la usa solo para elegir el paso) -->
+<script>(function(){var h=location.hash;window.MUYUY_HASH=h;if(h&&history.replaceState){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}})();</script>
+<title>Muyuy V1.0</title>
+<meta name="description" content="Rotaciones de cultivo con datos de la NASA y saber andino · Crop rotations with NASA data">
+<meta name="theme-color" content="#5d4037">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-96.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" media="print" onload="this.media='all'">
+<link rel="preload" as="image" href="img/portada-800.webp" media="(max-width: 820px)">
+<link rel="stylesheet" href="muyuy.min.css?v=72c899bf">
+</head>
+<body>
+<!-- se ve de inmediato, antes de que llegue el código; openSplash la quita -->
+<div id="portadaRapida" aria-hidden="true" style="position:fixed;inset:0;z-index:2147483000;background:#1d1916"><img src="img/portada-800.webp" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.75"><b style="position:absolute;left:24px;bottom:12%;color:#fff;font:700 2.6rem Georgia,serif">Muyuy</b></div>
+<script>try{if(JSON.parse(localStorage.getItem("muyuy-donde")))document.getElementById("portadaRapida").remove()}catch(e){}</script>
+<header class="top">
+  <div class="brand">
+    <img src="icon-96.png" alt="" width="40" height="40" class="logo-spin">
+    <div>
+      <h1>Muyuy V1.0</h1>
+      <p class="tag" data-i18n="tag">Rotaciones de cultivo con datos de la NASA</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <label class="site"><span data-i18n="idioma">Idioma</span>
+      <select id="lang">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+        <option value="qu">Runasimi</option>
+      </select>
+    </label>
+    <button type="button" class="back jbtn" id="btnJuegos" data-abre="menu"><i data-ico="juego"></i> <span data-i18n="btnJuegos">Juegos</span></button>
+    <button type="button" class="back audio" id="audioBtn" aria-pressed="false">🔊 Audio</button>
+    <details class="mas"><summary class="back"><i data-ico="mas"></i> <span data-i18n="mas">Más</span></summary>
+      <div class="mas-menu">
+    <button type="button" class="back" id="verAjustes" data-i18n="cfgMenu">⚙️ Configuración</button>
+    <button type="button" class="back" id="verQueHacer" data-i18n="qhMenu">🧭 ¿Qué quiere hacer?</button>
+    <button type="button" class="back" id="verLeer" data-i18n="leMenu">📚 Cómo leer los datos</button>
+    <a class="back" href="mapa.html" data-i18n="mapaBtn">🗺️ Mapa del Perú</a>
+    <a class="back" href="tecnica.html" data-i18n="vistaTec">Vista técnica</a>
+      </div>
+    </details>
+  </div>
+</header>
+<p class="qu-note" id="quNote" hidden></p>
+
+<nav class="stepper" id="stepper" aria-label="Pasos">
+  <div class="step-mobile" aria-hidden="true"><span id="stepNow"></span><span class="bar"><i id="stepBar"></i></span></div>
+  <ol class="steps" id="steps">
+    <li><button type="button" data-go="0"><span class="dot"><i data-ico="lugar"></i></span><span class="lbl" data-i18n="paso1">Chacra</span></button></li>
+    <li><button type="button" data-go="1"><span class="dot"><i data-ico="rotaciones"></i></span><span class="lbl" data-i18n="paso3">Opciones</span></button></li>
+    <li><button type="button" data-go="2"><span class="dot"><i data-ico="hoy"></i></span><span class="lbl" data-i18n="pasoCuando">Cuándo</span></button></li>
+    <li><button type="button" data-go="3"><span class="dot"><i data-ico="cierre"></i></span><span class="lbl" data-i18n="pasoCierre">Cierre</span></button></li>
+  </ol>
+</nav>
+
+<main>
+
+  <section class="card reveal step" id="parcela" aria-labelledby="h-parcela">
+    <!-- el lugar de todo lo que sigue: se ve en las tres pestañas del paso -->
+    <div class="mi-chacra">
+      <span class="mc-ico" aria-hidden="true"><i data-ico="lugar"></i></span>
+      <div class="mc-t"><b id="siteName">…</b><small id="siteSub" hidden></small><small id="siteDatos" hidden></small><span class="mc-extra"><span class="region-badge" id="regionBadge"></span> <button type="button" class="say" data-say="ayudaParcela">🔊</button></span></div>
+      <button type="button" id="sitePick" class="mc-btn" aria-haspopup="dialog" data-i18n="cambiar">Cambiar</button>
+      <select id="site" hidden aria-hidden="true" tabindex="-1"></select>
+    </div>
+    <h2 id="h-parcela"><span class="num">1</span> <span data-i18n="hParcela">Su chacra</span></h2>
+    <!-- primero lo que cuenta el agricultor (cambia el cálculo); después lo que dicen los datos de la NASA -->
+    <p class="salto"><span data-i18n="saltoT">¿Tiene apuro? Muyuy usa lo típico de su región.</span> <button type="button" class="salto-b" data-go="1" data-i18n="saltoB">Ver mis opciones ya →</button></p>
+    <details class="entrevista" id="entrevista" open>
+      <summary data-i18n="eTitulo">📝 Cuéntenos de su chacra</summary>
+      <p class="hint" data-i18n="eIntro"></p>
+      <form class="e-form" id="eForm">
+        <fieldset><legend data-i18n="eGSembro">🌱 ¿Qué sembró en esta chacra en las últimas 3 campañas?</legend>
+          <p class="e-ayuda" data-i18n="eGSembroS"></p>
+          <div class="e-tres">
+            <label class="e-combo"><span data-i18n="eC1">La última campaña</span><input type="text" id="eC1" class="e-cult" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="eSug1" autocomplete="off" spellcheck="false"><ul class="e-sug" id="eSug1" role="listbox" hidden></ul></label>
+            <label class="e-combo"><span data-i18n="eC2">La campaña anterior</span><input type="text" id="eC2" class="e-cult" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="eSug2" autocomplete="off" spellcheck="false"><ul class="e-sug" id="eSug2" role="listbox" hidden></ul></label>
+            <label class="e-combo"><span data-i18n="eC3">Hace 3 campañas</span><input type="text" id="eC3" class="e-cult" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="eSug3" autocomplete="off" spellcheck="false"><ul class="e-sug" id="eSug3" role="listbox" hidden></ul></label>
+          </div>
+        </fieldset>
+        <fieldset><legend data-i18n="eGAgua">💧 Agua</legend>
+          <label><span data-i18n="eRiego">¿Tiene riego?</span> <select id="eRiego"></select></label>
+        </fieldset>
+        <button type="submit" data-i18n="eGuardar">💾 Guardar y recalcular</button>
+      </form>
+    </details>
+  <div class="sub-paso" id="prioridades" aria-labelledby="h-prio">
+    <h3 class="sub-h" id="h-prio"><span data-i18n="hPrio">¿Qué le importa más?</span> <button type="button" class="say" data-say="ayudaPrio">🔊</button></h3>
+    <div class="presets" role="group" aria-label="Atajos">
+      <button type="button" class="preset on" data-p="5,5,5,5" data-i18n="preEq">⚖️ Un poco de todo</button>
+      <button type="button" class="preset" data-p="10,3,3,3" data-i18n="preAgua">💧 Agua primero</button>
+      <button type="button" class="preset" data-p="3,10,3,3" data-i18n="preIng">💰 Vender más</button>
+      <button type="button" class="preset" data-p="3,3,10,3" data-i18n="preSuelo">🌱 Cuidar el suelo</button>
+      <button type="button" class="preset" data-p="3,3,3,10" data-i18n="preRiesgo">🛡️ No perder</button>
+    </div>
+    <p class="prio-conf" id="prioConf" aria-live="polite"></p>
+    <!-- campo.js: cultivos que no puede sembrar, forraje y agua -->
+    <div class="campo-bloque restric" id="restric"></div>
+  </div>
+    <!-- lo que no hace falta para ver opciones: todo junto y plegado -->
+    <details class="pm afinar" id="afinar"><summary data-i18n="afinarT">🔧 Afinar (opcional)</summary>
+    <p class="small" data-i18n="afinarS"></p>
+    <div class="e-afinar">
+        <fieldset class="e-sierra"><legend data-i18n="eGClima">❄️ Heladas y granizo</legend>
+          <label><span data-i18n="eHeladas">De las últimas 5 campañas, ¿en cuántas tuvo helada fuerte?</span> <select id="eHeladas"></select></label>
+          <label><span data-i18n="eGranizo">De las últimas 5 campañas, ¿en cuántas cayó granizo fuerte?</span> <select id="eGranizo"></select></label>
+        </fieldset>
+        <fieldset><legend data-i18n="eGSuelo">🟫 Su tierra</legend>
+          <label class="l-tex"><span data-i18n="eTextura">¿Cómo es su tierra?</span> <select id="eTextura"></select></label>
+          <label class="l-terr"><span data-i18n="eTerrazas">¿Su chacra tiene terrazas, andenes o zanjas?</span> <select id="eTerrazas"></select></label>
+          <label class="l-abono"><span data-i18n="eAbono">¿Abona con estiércol o guano?</span> <select id="eAbono"></select></label>
+        </fieldset>
+    <button type="button" class="btn-sec af-guardar" id="afinarGuardar" data-i18n="eGuardar">💾 Guardar y recalcular</button>
+    </div>
+    <!-- los botones de arriba bastan; las barras quedan para quien quiera afinar -->
+    <details class="prio-aj" id="prioAjuste"><summary data-i18n="prioAjT">🎚️ Ajustar a mi gusto</summary>
+    <div class="prio-grid">
+      <label class="prio" data-k="agua">
+        <span class="prio-anim" data-lottie="gota" data-loop="false"></span>
+        <span class="prio-title" data-i18n="agua">Agua</span><span class="prio-desc" data-i18n="aguaD">Aguantar la sequía y gastar poca agua</span>
+        <output>●●●○○</output>
+        <input type="range" min="0" max="10" value="5" data-k="agua" aria-label="Agua">
+        <span class="crown" data-i18n="corona">★ Lo más importante</span>
+      </label>
+      <label class="prio" data-k="ingreso">
+        <span class="prio-anim" data-lottie="moneda" data-loop="false"></span>
+        <span class="prio-title" data-i18n="ingreso">Ingreso</span><span class="prio-desc" data-i18n="ingresoD">Vender y ganar más</span>
+        <output>●●●○○</output>
+        <input type="range" min="0" max="10" value="5" data-k="ingreso" aria-label="Ingreso">
+        <span class="crown" data-i18n="corona">★ Lo más importante</span>
+      </label>
+      <label class="prio" data-k="suelo">
+        <span class="prio-anim" data-lottie="brote" data-loop="false"></span>
+        <span class="prio-title" data-i18n="suelo">Suelo</span><span class="prio-desc" data-i18n="sueloD">Que la tierra no se canse</span>
+        <output>●●●○○</output>
+        <input type="range" min="0" max="10" value="5" data-k="suelo" aria-label="Suelo">
+        <span class="crown" data-i18n="corona">★ Lo más importante</span>
+      </label>
+      <label class="prio" data-k="riesgo">
+        <span class="prio-anim" data-lottie="escudo" data-loop="false"></span>
+        <span class="prio-title" data-i18n="riesgo">No perder</span><span class="prio-desc" data-i18n="riesgoD">Asegurar la cosecha en años malos</span>
+        <output>●●●○○</output>
+        <input type="range" min="0" max="10" value="5" data-k="riesgo" aria-label="No perder">
+        <span class="crown" data-i18n="corona">★ Lo más importante</span>
+      </label>
+    </div>
+    </details>
+    <div class="restric" id="restricMas"></div>
+    <!-- también condiciones de la chacra; sus listas no se redibujan: app.js las lee y guarda -->
+    <div class="restric-fijos" id="restricFijos">
+      <details class="rs-fil" data-k="desc"><summary><span data-i18n="maxDesc">¿Cuántas campañas puede dejar la tierra sin cosecha?</span><b id="vDesc"></b></summary>
+        <div class="rs-cuerpo"><label class="inline"><select id="maxDesc" aria-label="Campañas sin cosecha"><option>0</option><option selected>1</option><option>2</option></select></label></div></details>
+      <details class="rs-fil asoc-opt" id="asocOpt" data-k="asoc"><summary><span data-i18n="asocOpt">🌽🫘 Cultivos asociados</span><b id="vAsoc"></b></summary>
+        <div class="rs-cuerpo"><label class="inline"><select id="asoc" aria-label="Cultivos asociados"><option value="si" data-i18n="asocSi">Incluir</option><option value="pref" data-i18n="asocPref">Darles preferencia</option><option value="no" data-i18n="asocNo">No usar</option></select></label>
+        <p class="hint asoc-hint" id="asocHint"></p></div></details>
+    </div>
+    <!-- análisis de laboratorio: interpretación del INIA y, si trae textura o materia orgánica, entra en el cálculo -->
+    <details class="suelo-lab" id="sueloLab"><summary data-i18n="labT">🧪 Tengo un análisis de suelo</summary><div id="sueloLabC"></div></details>
+    <div class="af-tec">
+      <p class="e-total"><span id="eTotal"></span> <button type="button" class="e-csv" id="eCsv" data-i18n="eCsv">⬇ Descargar entrevistas (CSV)</button></p>
+    </div>
+    </details>
+    <details class="pm" id="nasaMas"><summary><span id="nasaRes" data-i18n="ctxDatosT">🛰️ Lo que dicen los datos de la NASA de su chacra</span></summary>
+    <div id="ctx" class="ctx"></div>
+    <div class="mini-map" id="miniMap" aria-hidden="true"></div>
+    <p class="mini-cap" data-i18n="miniCap"></p>
+    <!-- analisis.js: riesgos dentro de la chacra con el relieve cada 90 m -->
+    <div class="campo-bloque" id="campoRiesgo" hidden></div>
+    </details>
+    <button type="button" class="ir-paso" data-go="1" data-i18n="irOpciones">Ver mis opciones →</button>
+  </section>
+
+
+  <section class="card reveal step" id="hoy" aria-labelledby="h-hoy">
+    <h2 id="h-hoy"><span class="num">3</span> <span data-i18n="hCuando">Cuándo sembrar</span> <button type="button" class="say" data-say="ayudaHoy">🔊</button></h2>
+    <!-- los últimos días de la chacra (ahora.js): semáforo de siembra, avisos, lluvia de la campaña y verdor -->
+    <div class="ahora" id="ahora" aria-labelledby="h-ahora">
+      <h3 class="ctx-h" id="h-ahora"><span data-i18n="ahT">📡 Cómo está su chacra ahora</span> <button type="button" class="say" data-say="t_ahora">🔊</button></h3>
+      <div id="ahoraBody" aria-live="polite"></div>
+    </div>
+    <!-- campo.js: meses sin cultivo, meses delicados y oportunidades -->
+    <div class="campo-bloque" id="calendario"></div>
+    <details class="pm" id="dHoy"><summary data-i18n="pmHoy">📊 Cómo le ha ido a lo que siembra hoy</summary>
+    <div id="hoyNota"><p class="hint" data-i18n="hoyIntro"></p>
+    <p class="hoy-fuente" id="hoyFuente"></p></div>
+    <div id="hoyCard"></div>
+    </details>
+    <button type="button" class="ir-paso" data-go="3" data-i18n="irCierre">Después de la cosecha →</button>
+    <!-- piezas que renderHoy coloca dentro de la tarjeta, en orden: repaso → cuadros → leyenda → años recordados -->
+    <div id="hoyStash" hidden>
+      <div class="replay-row" id="replayRow"><button type="button" class="replay" id="replayBtn" data-i18n="replay">▶ Ver año por año</button><p class="replay-year" id="replayYear" aria-live="polite"></p></div>
+      <p class="legend legend-top" id="hoyLegend"><span class="lg"><span class="sq ok"></span> <span data-i18n="funciono">funcionó</span></span> <span class="lg"><span class="sq bad"></span> <span data-i18n="noFunciono">no funcionó</span></span> <span class="lg"><span class="sq nino"></span> <span data-i18n="leyenda">El Niño · cada cuadro es un año</span></span></p>
+      <div class="hoy-bloque" id="hoyMem"><h3 class="hoy-h" data-i18n="hoyMemT">Los años que usted recuerda</h3><p class="hoy-s" data-i18n="hoyMemS"></p><ul class="memoria" id="memoria"></ul></div>
+    </div>
+  </section>
+
+  <section id="rotaciones" aria-labelledby="h-top" class="reveal step">
+    <h2 id="h-top" class="section-title"><span class="num">2</span> <span data-i18n="hTop">3 opciones para su chacra</span> <button type="button" class="say" data-say="ayudaRot">🔊</button></h2>
+    <!-- facil.js: lo primero que ve el agricultor en este paso -->
+    <div class="card campo-card resumen" id="resumen"></div>
+    <p class="legend legend-top"><span class="lg"><span class="sq ok"></span> <span data-i18n="funciono">funcionó</span></span> <span class="lg"><span class="sq bad"></span> <span data-i18n="noFunciono">no funcionó</span></span> <span class="lg"><span class="sq nino"></span> <span data-i18n="leyenda">El Niño · cada cuadro es un año</span></span></p>
+    <p class="legend rec-legend" id="recRot"></p>
+    <div class="que-pasa">
+    <div class="enso" id="ensoBanner" hidden></div>
+    <div class="escenarios" id="escenarios" role="group"></div>
+    <p class="fut-nota" id="futNota" hidden></p>
+    </div>
+    <div class="top-tabs" id="topTabs" role="tablist"></div>
+    <div class="top-wrap">
+      <div id="top" class="top3"></div>
+      <div class="computing" id="computing" hidden>
+        <div class="loader" data-lottie="muyuy" data-loop="true"></div>
+        <p id="probando"></p>
+      </div>
+    </div>
+    <!-- campo.js: «Aquí manda su criterio»: cuándo la experiencia del agricultor vale más que los datos -->
+    <div class="card campo-card su-criterio" id="suCriterio"></div>
+    <!-- antes eran pestañas y pasos aparte: ahora se abren aquí, debajo de las opciones -->
+    <details class="pm" id="dComparar"><summary data-i18n="pmComparar">⚖️ Comparar con lo que siembra hoy</summary>
+    <!-- campo.js: la de hoy y las 3 opciones en una tabla, y una ficha por estrategia -->
+    <div class="card campo-card" id="estrategias"></div>
+    </details>
+    <details class="pm" id="dPruebe"><summary data-i18n="pmPruebe">✏️ Probar mi propia idea</summary>
+  <div class="sub-paso" id="pruebe" aria-labelledby="h-build">
+    <h3 class="sub-h" id="h-build"><span data-i18n="hBuild">Pruebe su propia idea</span> <button type="button" class="say" data-say="ayudaExp">🔊</button></h3>
+    <p class="hint" data-i18n="hintBuild">Arrastre un cultivo a cada campaña, o tóquelo y luego toque la campaña. Pruebe lo que siembra hoy y compare.</p>
+    <div class="slots" id="slots">
+      <div class="slot" data-i="0" tabindex="0"><small></small><b>＋</b></div>
+      <div class="slot" data-i="1" tabindex="0"><small></small><b>＋</b></div>
+      <div class="slot" data-i="2" tabindex="0"><small></small><b>＋</b></div>
+    </div>
+    <!-- mientras arma: qué falta y lo que ya se puede decir de cada par de campañas; al completar, el veredicto con razones -->
+    <div id="armado" class="armado" aria-live="polite"></div>
+    <div id="palette" class="palette"></div>
+    <p class="pal-nota" id="palNota" hidden></p>
+    <div class="builder-actions"><button type="button" id="clearSlots" data-i18n="limpiar">↺ Empezar de nuevo</button></div>
+    <div id="verdict" class="verdict" hidden></div>
+    <div id="custom"></div>
+    <div id="prueba"></div>
+  </div>
+    </details>
+    <details class="pm" id="dMasAn"><summary data-i18n="pmMasAn">🔍 Más análisis (para el técnico)</summary>
+    <!-- campo.js: deslizadores de lluvia, temperatura y precio -->
+    <!-- criterio.js: patrones que encontró Muyuy y «¿Coincide con lo que usted ha visto?» -->
+    <div class="card campo-card" id="patrones" hidden></div>
+    <div class="card campo-card" id="simulador"></div>
+    </details>
+    <button type="button" class="ir-paso" data-go="2" data-i18n="irCuando">Cuándo sembrar →</button>
+  </section>
+
+
+
+  <section class="card reveal step" id="cierre" aria-labelledby="h-cierre">
+    <h2 id="h-cierre"><span class="num">4</span> <span data-i18n="hCierre">¿Cómo le fue?</span> <button type="button" class="say" data-say="ayudaCierre">🔊</button></h2>
+    <p class="hint" data-i18n="cierreIntro"></p>
+    <p class="cierre-aviso" id="cierreAviso" data-i18n="cierreAviso"></p>
+    <form class="cierre-form" id="cierreForm">
+      <fieldset class="como"><legend data-i18n="qComo">¿Cómo le fue?</legend>
+        <label><input type="radio" name="como" value="bien"> <span data-i18n="bien">😀 Bien</span></label>
+        <label><input type="radio" name="como" value="regular"> <span data-i18n="regular">😐 Regular</span></label>
+        <label><input type="radio" name="como" value="mal"> <span data-i18n="mal">☹️ Mal</span></label>
+      </fieldset>
+      <label><span data-i18n="qSembro">¿Qué sembró?</span> <select id="cSembro"></select></label>
+      <label><span data-i18n="qKg">¿Cuánto cosechó? (opcional)</span> <span class="c-cant"><input type="number" id="cKg" min="0" step="any" inputmode="decimal"><select id="cUnidad"></select><input type="number" id="cSacoKg" min="1" step="any" inputmode="decimal" hidden></span><small id="cKgEq"></small></label>
+      <label class="c-nov"><input type="checkbox" id="cNoVendi"> <span data-i18n="cNoVendi">No vendí</span></label>
+      <label id="cPrecioL"><span id="cPrecioT"></span> <input type="number" id="cPrecio" min="0" step="any" inputmode="decimal"></label>
+      <fieldset class="como"><legend data-i18n="qAcierto">¿Acertó Muyuy en su chacra?</legend>
+        <label><input type="radio" name="acierto" value="si"> <span data-i18n="acSi">👍 Sí</span></label>
+        <label><input type="radio" name="acierto" value="mas"> <span data-i18n="acMas">🤏 Más o menos</span></label>
+        <label><input type="radio" name="acierto" value="no"> <span data-i18n="acNo">👎 No</span></label>
+      </fieldset>
+      <button type="submit" data-i18n="guardar">💾 Guardar</button>
+    </form>
+    <h3 data-i18n="registro">Su registro</h3>
+    <ul class="registro" id="registro"></ul>
+    <div class="acierto" id="acierto"></div>
+    <details class="pm" id="dCuaderno"><summary data-i18n="cuT">📒 Cuaderno de campo</summary>
+    <div class="cuaderno" id="cuaderno">
+      <p class="hint" data-i18n="cuIntro"></p>
+      <form class="cierre-form cu-form" id="cuForm">
+        <div class="cu-fila cu-uno">
+          <label><span data-i18n="cuFecha">Fecha</span> <input type="date" id="cuFecha" required></label>
+        </div>
+        <fieldset class="cu-tipos"><legend data-i18n="cuTipo">¿Qué pasó?</legend><select id="cuTipo" hidden></select><div id="cuTipos"></div></fieldset>
+        <details class="cu-det"><summary data-i18n="cuDet">Agregar cantidad o nota</summary>
+        <label id="cuPedazoL" hidden><span data-i18n="cuPedazo">Pedazo</span> <select id="cuPedazo"></select></label>
+        <div class="cu-fila">
+          <label><span data-i18n="cuValor">Cantidad</span> <input type="number" id="cuValor" step="any" inputmode="decimal"></label>
+          <label><span data-i18n="cuUnidad">Unidad</span> <select id="cuUnidad"></select></label>
+        </div>
+        <label><span data-i18n="cuNota">Nota</span> <input type="text" id="cuNota" maxlength="140"></label>
+        </details>
+        <button type="submit" data-i18n="cuAnotar">💾 Anotar</button>
+      </form>
+      <div id="cuPrueba"></div>
+      <ul class="cu-lista" id="cuLista"></ul>
+      <div class="cu-datos">
+        <button type="button" id="cuCsv" data-i18n="cuCsv">⬇ Descargar cuaderno</button>
+        <button type="button" id="cuInforme" data-i18n="cuInforme">🖨️ Informe para imprimir o guardar en PDF</button>
+        <button type="button" id="cuBorrar" class="cu-borrar" data-i18n="cuBorrar">🗑️ Borrar mis datos</button>
+      </div>
+      <div class="cu-confirma" id="cuConfirma" role="alertdialog" aria-labelledby="cuConfX" hidden>
+        <p id="cuConfX" data-i18n="cuConfX"></p>
+        <button type="button" id="cuConfSi" class="cu-borrar" data-i18n="cuConfSi">Sí, borrar todo</button> <button type="button" id="cuConfNo" data-i18n="cuConfNo">Cancelar</button>
+      </div>
+      <p class="small" data-i18n="cuPriv"></p>
+    </div>
+    </details>
+  </section>
+
+  <!-- «Cómo leer los datos (y lo que Muyuy no sabe)»: se abre desde el menú Más -->
+  <dialog id="leerDlg" class="leer-dlg" aria-labelledby="h-leer">
+  <button type="button" class="leer-x" id="leerClose" aria-label="Cerrar">✕</button>
+  <section class="card leer" id="leer" aria-labelledby="h-leer">
+    <h2 id="h-leer" data-i18n="leT">📚 Cómo leer los datos (y lo que Muyuy no sabe)</h2>
+    <p class="hint" data-i18n="leS"></p>
+    <!-- portada con 4 temas (campo.js: temasExtra). Las secciones se guardan en #ieGuarda y al tocar un tema se
+         muestran solo las suyas: pocas a la vez, con ícono y sin un largo listado de secciones -->
+    <div class="ie-bus" id="ieBus"><input type="search" id="ieQ" autocomplete="off" aria-controls="ieRes"><ul class="ie-res" id="ieRes" hidden></ul></div>
+    <nav class="ie-temas" id="ieTemas" aria-label="Temas"></nav>
+    <div class="ie-pane" id="iePane" hidden><button type="button" class="btn-sec ie-volver" id="ieVolver" data-i18n="ieVolver">‹ Temas</button><h3 class="ie-tit" id="ieTit"></h3><div class="ie-tabs" id="ieTabs" role="tablist"></div><div id="ieSecs"></div><button type="button" class="btn-sec ie-sig" id="ieSig"></button></div>
+    <div id="ieGuarda" hidden></div>
+    <!-- Información extra: lo que sirve para consultar, no para decidir. Los 6 pasos quedan solo con lo que ayuda al
+         agricultor a tomar su propia decisión; esto se mueve aquí desde los pasos (campo.js) -->
+    <details class="le-sec" id="leClima"><summary data-i18n="ieClima">📈 Su clima año por año</summary><div id="leClimaBody"></div></details>
+    <details class="rot-que le-sec" id="leRotar"><summary data-i18n="rotQue">🔄 ¿Qué es rotar?</summary>
+    <figure class="rot-fig"><img src="img/rotacion.webp" alt="" width="960" height="640" loading="lazy"><figcaption data-i18n="rotFig">Rotar es cambiar de cultivo cada campaña: después de la papa, una leguminosa (habas, frijol) devuelve nitrógeno al suelo; luego un grano, y un descanso deja que la tierra se recupere.</figcaption></figure>
+    </details>
+    <!-- campo.js: tendencias de 1981 a hoy, más satélites (Grace, GEDI, Modis LST), contraste de fuentes y sonido -->
+    <div class="campo-bloque" id="tendencias" hidden></div>
+    <div id="leerBody"></div>
+    <!-- campo.js: más satélites de la NASA (Grace, Modis LST, GEDI) y contraste NASA Power ↔ ERA5 -->
+    <div id="leerSats" class="le-sats"></div>
+    <!-- antes era una tarjeta aparte que repetía las fuentes: ahora es una sección más de «Cómo leer los datos» -->
+    <details class="le-sec fuentes" id="fuentes">
+      <summary id="h-src" data-i18n="hSrc">¿De dónde salen estos números?</summary>
+      <div>
+        <p data-i18n-html="fuentes"></p>
+        <p data-i18n-html="fuentesAhora"></p>
+        <p data-i18n-html="fuentesSat"></p>
+        <p data-i18n-html="fuentesOds"></p>
+        <p class="small" data-i18n-html="fuentesSI"></p>
+      </div>
+    </details>
+    <!-- el método, que antes era una pestaña de la vista técnica: campo.js lo llena con los textos de I18N_TEC -->
+    <details class="le-sec" id="leMetodo"><summary id="leMetodoT"></summary><div id="leMetodoBody"></div></details>
+  </section>
+  </dialog>
+</main>
+
+<div class="wizard-nav" id="wizardNav">
+  <button type="button" id="prevBtn" class="w-prev">← <span data-i18n="atras">Atrás</span></button>
+  <span class="w-count" id="stepCount"></span>
+  <button type="button" id="helpBtn2" class="w-help" aria-haspopup="dialog" aria-label="?">?</button>
+  <button type="button" id="nextBtn" class="w-next"></button>
+</div>
+
+<button type="button" class="help-fab" id="helpBtn" aria-haspopup="dialog"><span aria-hidden="true">?</span> <span class="sr" data-i18n="ayuda">Ayuda</span></button>
+<dialog id="juegos" class="juegos-dlg" aria-labelledby="jTitulo">
+  <header class="j-head"><span class="j-ico">🎮</span><div><h2 id="jTitulo" data-i18n="juegosTit">Juegos de Muyuy</h2><p data-i18n="juegosSub">Para divertirse y aprender con el clima de la NASA para su chacra. No cambian su plan.</p></div><button type="button" class="pk-x" id="jCerrar" aria-label="Cerrar">✕</button></header>
+  <div class="j-body" id="juego">
+    <!-- primero se elige el juego en un carrusel (games.js: verMenu) -->
+    <div class="g-menu" id="gMenu" hidden></div>
+    <button type="button" class="btn-sec g-volver" id="gVolver" hidden data-i18n="gVolver">‹ Todos los juegos</button>
+    <div class="arcade-tabs" role="tablist">
+      <button type="button" role="tab" data-g="ayllu" class="on" aria-selected="true"><span class="t-ico">🌾</span><span><b data-i18n="gTabAyllu">El ayllu</b><small data-i18n="gTabAylluS">3 sectores, años reales</small></span></button>
+      <button type="button" role="tab" data-g="duelo" aria-selected="false"><span class="t-ico">⚔️</span><span><b data-i18n="gTabDuelo">Duelo</b><small data-i18n="gTabDueloS">¿Cuál aguantó?</small></span></button>
+      <button type="button" role="tab" data-g="qocha" aria-selected="false"><span class="t-ico">💧</span><span><b data-i18n="gTabQocha">La qocha</b><small data-i18n="gTabQochaS">Guarde la lluvia</small></span></button>
+      <button type="button" role="tab" data-g="viaje" aria-selected="false" class="t-mundo"><span class="t-ico">🌍</span><span><b data-i18n="gTabViaje">Vuelta al mundo</b><small data-i18n="gTabViajeS">Siembre en 5 países</small></span></button>
+      <button type="button" role="tab" data-g="nino" aria-selected="false" class="t-mundo"><span class="t-ico">🌊</span><span><b data-i18n="gTabNino">El Niño en el mundo</b><small data-i18n="gTabNinoS">¿Dónde aguanta más?</small></span></button>
+    </div>
+    <div class="g-pane" id="gp-ayllu">
+      <p class="ay-meta" data-i18n-html="ayMeta"></p>
+      <ol class="ay-pasos"><li data-i18n="ayP1"></li><li data-i18n="ayP2"></li><li data-i18n="ayP3"></li></ol>
+      <div class="presets">
+        <button type="button" id="gMuyuy" data-i18n="ayTurnar">🔄 Turnar los cultivos</button>
+        <button type="button" id="gIgual" data-i18n="ayIgual">🟰 Sembrar lo mismo en todo</button>
+      </div>
+      <div class="sectores" id="sectores"></div>
+      <div class="campo"><div class="cielo nubes" id="aCielo"><div class="fx"><b class="nube n1"></b><b class="nube n2"></b></div><span class="ano"></span></div><div class="chacras" id="chacras"></div></div>
+      <div class="g-barra"><button type="button" class="jugar" id="gJugar" data-i18n="ayJugar">🎲 Empezar los 5 años</button>
+        <div class="marcador" id="marcador" aria-live="polite" hidden></div></div>
+      <div class="ay-anio" id="ayAnio" aria-live="polite" hidden></div>
+      <div id="rondas" class="rondas"></div>
+      <div id="leccion" class="verdict" hidden></div>
+    </div>
+    <div class="g-pane" id="gp-duelo" hidden></div>
+    <div class="g-pane" id="gp-qocha" hidden></div>
+    <div class="g-pane" id="gp-viaje" hidden></div>
+    <div class="g-pane" id="gp-nino" hidden></div>
+  </div>
+</dialog>
+<dialog id="splash" class="splash" aria-labelledby="spTitulo"></dialog>
+<dialog id="queHacer" class="que-hacer" aria-labelledby="qhT"></dialog>
+<dialog id="ajustes" class="ajustes" aria-labelledby="cfgTit"></dialog>
+<dialog id="picker" class="picker" aria-labelledby="pickTitle">
+  <header class="pk-head">
+    <h2 id="pickTitle" data-i18n="pickTitulo">Elija su comunidad</h2>
+    <div class="pk-buscar">
+      <input type="search" id="pickQ" autocomplete="off" aria-controls="pickRes">
+      <ul id="pickRes" class="pk-res"></ul>
+    </div>
+    <button type="button" id="pickGps" class="pk-gps" data-i18n="pickGps">📍 Mi ubicación</button>
+    <button type="button" id="pickClose" class="pk-x" aria-label="✕">✕</button>
+  </header>
+  <div class="pk-guia">
+  <p class="pk-help" data-i18n="pickAyuda"></p>
+  <div class="pk-favs" id="pickFavs" hidden></div>
+  <div class="pk-mas">
+  <ul class="pk-ley">
+    <li><i style="background:#d81b60"></i><span data-i18n="leyCamp"></span></li>
+    <li><i style="background:#2e8b57"></i><span data-i18n="leyNat"></span></li>
+    <li><i style="background:#3f51b5"></i><span data-i18n="leyDist"></span></li>
+    <li><i style="background:#e67e00"></i><span data-i18n="leyPob"></span></li>
+    <li><i class="ley-lin dep" aria-hidden="true"></i><span data-i18n="leyLimDep"></span></li>
+    <li><i class="ley-lin prov" aria-hidden="true"></i><span data-i18n="leyLimProv"></span></li>
+    <li><i class="ley-lin dist" aria-hidden="true"></i><span data-i18n="leyLimDist"></span></li>
+  </ul>
+  <details class="pk-otros"><summary data-i18n="pickMundoVer"></summary><div class="pk-mundo" id="pickMundo"></div></details>
+  </div>
+  </div>
+  <div class="pk-body">
+    <div id="pickMap" class="pk-map"></div>
+    <aside class="pk-info" id="pickInfo" aria-live="polite"></aside>
+  </div>
+  <footer class="pk-foot">
+    <button type="button" id="pickList" class="pk-link" data-i18n="pickLista">Elegir de una lista</button>
+    <button type="button" id="pickExacta" class="pk-exact" hidden></button>
+    <button type="button" id="pickUse" class="pk-use" disabled data-i18n="pickUsar">✔ Usar este lugar</button>
+  </footer>
+</dialog>
+<div id="tour" class="tour" hidden><div class="tour-spot" id="tourSpot"></div><div class="tour-bubble" id="tourBubble" role="dialog" aria-live="polite"></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<div id="printArea" class="print-only"></div>
+
+<template id="tpl-card">
+  <article class="rot">
+    <header>
+      <span class="rank"></span>
+      <span class="risk"><span class="risk-anim"></span><span class="risk-txt"></span></span>
+    </header>
+    <ol class="timeline"></ol>
+    <div class="robust-row">
+      <svg class="gauge" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="26" class="g-bg"/><circle cx="32" cy="32" r="26" class="g-fg"/>
+        <text x="32" y="37" text-anchor="middle" class="g-num">0</text>
+      </svg>
+      <div>
+        <p class="robust"></p>
+        <p class="robust-s" data-i18n="robustS">con el clima de la NASA desde 1981</p>
+      </div>
+    </div>
+    <p class="grid-s" data-i18n="gridS">Cada cuadro son 3 campañas seguidas: verde funcionó, rojo no.</p>
+    <div class="grid" aria-label="Años probados"></div>
+    <div class="vs"></div>
+    <div class="tipo"><p class="card-t" data-i18n="hoyTipoT">Según el tipo de año</p><div class="sub"></div></div>
+    <details class="why-box">
+      <summary data-i18n="porQue">¿Por qué esta rotación?</summary>
+      <div class="why"></div>
+    </details>
+    <details class="acc-menu"><summary data-i18n="masAcc">⋯ Más de esta rotación</summary>
+    <details class="why-box plan-box">
+      <summary data-i18n="plan">Plan de campaña: de la siembra a la venta</summary>
+      <ol class="plan"></ol>
+    </details>
+    <div class="actions">
+      <button class="listen" type="button"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span> <span data-i18n="escuchar">Escuchar</span></button>
+      <button class="print" type="button" data-i18n="calendario">🖨️ Imprimir calendario</button>
+      <button class="share" type="button" data-i18n="compartir">📲 Compartir</button>
+    </div>
+    </details>
+    <span class="score"></span>
+  </article>
+</template>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" async onload="window.lottieListo && lottieListo()"></script>
+<script src="muyuy.min.js?v=8d58f428" defer></script>
+</body>
+</html>

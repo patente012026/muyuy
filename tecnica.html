@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(function(){var a={};try{a=JSON.parse(localStorage.getItem("muyuy-ajustes"))||{}}catch(e){}window.MUYUY_AJ=a;["letra","contraste","legible"].forEach(function(k){if(a[k])document.documentElement.setAttribute("data-"+k,a[k])})})();</script>
+<!-- siempre en modo claro, igual en el celular y la laptop (ni el modo oscuro del equipo ni el de Chrome cambian los colores) -->
+<meta name="color-scheme" content="only light">
+<title>Muyuy V1.0 · Vista técnica</title>
+<meta name="description" content="El porqué de cada rotación en números: mapa NDVI, clima, balance de agua, plan de campaña y comparación">
+<meta name="theme-color" content="#5d4037">
+<link rel="icon" href="icon-96.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="tecnica.css">
+</head>
+<body class="viz-root">
+<header class="top">
+  <div class="brand">
+    <img src="icon-96.png" alt="" width="40" height="40">
+    <div>
+      <h1 data-i18n="titulo">Muyuy V1.0 · vista técnica</h1>
+      <p class="tag" data-i18n="tag">Para extensionistas, técnicos y jurado: el porqué en números</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <label class="site"><span id="lblLang">Idioma</span>
+      <select id="lang"><option value="es">Español</option><option value="en">English</option><option value="qu">Runasimi</option></select>
+    </label>
+    <label class="site"><span id="lblSite">Comunidad</span> <select id="site"></select></label>
+    <p class="hint calc-nota" id="calcNota" hidden aria-live="polite"></p>
+    <a class="back" href="index.html" id="lnkBack">← Vista del agricultor</a>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs" role="tablist"></nav>
+<main>
+  <section class="card" data-tab="lugar">
+    <h2 data-i18n="s1"></h2>
+    <div class="map-wrap">
+      <div class="map-box">
+        <div id="map" role="img" aria-label="NDVI Modis"></div>
+        <div class="map-fecha" id="mapFecha" aria-live="polite"></div>
+        <div class="map-prog"><i id="mapProg"></i></div>
+      </div>
+      <div class="map-side">
+        <label><span data-i18n="capa"></span>
+          <select id="ndviDate"></select>
+        </label>
+        <button type="button" class="play-ndvi" id="playNdvi" data-i18n="playNdvi"></button>
+        <label class="inline"><input type="checkbox" id="ndviOn" checked> <span data-i18n="mostrar"></span></label>
+        <div class="ndvi-legend"><span data-i18n="bajo"></span><i></i><span data-i18n="alto"></span></div>
+        <ul class="facts" id="facts"></ul>
+        <div class="tri-tex" id="triTex"></div>
+        <p class="small" id="mapNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="secNdvi" data-tab="lugar">
+    <h2 data-i18n="s2"></h2>
+    <p class="hint" data-i18n="s2h"></p>
+    <div class="chips" id="ndviRango"></div>
+    <div class="chart" id="ndviChart"></div>
+    <h3 data-i18n="ndviMes"></h3>
+    <div class="chart small-chart" id="ndviSeason"></div>
+  </section>
+
+  <section class="card" data-tab="clima">
+    <h2 data-i18n="s3"></h2>
+    <p class="hint" data-i18n="s3h"></p>
+    <div class="two">
+      <div><h3 data-i18n="s3a"></h3><div class="chart" id="climaAgua"></div></div>
+      <div><h3 data-i18n="s3b"></h3><div class="chart" id="climaTemp"></div></div>
+    </div>
+    <p class="small" id="climaNote"></p>
+  </section>
+
+  <section class="card" id="secFuturo" data-tab="clima">
+    <h2 data-i18n="s8"></h2>
+    <p class="hint" data-i18n="s8h"></p>
+    <p class="fut-resumen" id="futResumen"></p>
+    <div class="leyenda" id="futLey"></div>
+    <div class="chart" id="futMes"></div>
+    <h3 data-i18n="futScatter"></h3>
+    <p class="hint" data-i18n="futScatterH"></p>
+    <div class="chart" id="futScatter"></div>
+  </section>
+
+  <section class="card" data-tab="comparar">
+    <h2 data-i18n="s4"></h2>
+    <div class="cmp-controls">
+      <div><span class="sw s1"></span> <b data-i18n="rec"></b> <select id="selRec"></select></div>
+      <div><span class="sw s2"></span> <b data-i18n="act"></b>
+        <select class="selAct" data-i="0"></select><select class="selAct" data-i="1"></select><select class="selAct" data-i="2"></select>
+      </div>
+    </div>
+    <div class="table-wrap"><table class="cmp" id="cmpTable"></table></div>
+    <p class="small" id="pesos"></p>
+    <h3 data-i18n="porCampania"></h3>
+    <div class="chips" id="metricas"></div>
+    <div class="chart una" id="multiples"></div>
+  </section>
+
+  <section class="card" data-tab="rotaciones">
+    <h2 data-i18n="s6"></h2>
+    <p class="hint" data-i18n="s6h"></p>
+    <label class="filtro"><span data-i18n="scResaltar"></span> <select id="scFiltro"></select></label>
+    <div class="leyenda" id="scLey"></div>
+    <div class="chart" id="scatter"></div>
+    <div class="detalle" id="scDetalle" aria-live="polite" hidden></div>
+  </section>
+
+  <section class="card" data-tab="rotaciones">
+    <h2 data-i18n="s5"></h2>
+    <p class="hint" data-i18n="s5h"></p>
+    <div class="chips" id="heatFiltro"></div>
+    <div class="chart" id="heat"></div>
+  </section>
+
+  <section class="card" data-tab="plan">
+    <h2 data-i18n="s7"></h2>
+    <p class="hint" data-i18n="s7h"></p>
+    <label class="filtro"><span data-i18n="cultivo"></span> <select id="planCult"></select></label>
+    <ol class="pasos" id="planPasos"></ol>
+  </section>
+
+  <section class="card" id="secMundo" data-tab="mundo">
+    <h2 data-i18n="s9"></h2>
+    <p class="hint" data-i18n="s9h"></p>
+    <div class="mu-lista" id="mundoLista"></div>
+  </section>
+
+</main>
+<div id="tip" class="tip" role="tooltip" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="puntos.js"></script>
+<script src="i18n.js"></script>
+<script src="motor.js"></script>
+<script src="tecnica.js"></script>
+<script src="chat.js"></script>
+</body>
+</html>

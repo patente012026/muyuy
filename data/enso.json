@@ -1,0 +1,46 @@
+{
+ "descargado": "2026-11-15",
+ "oni": [
+  {
+   "temporada": "MAM",
+   "anio": 2026,
+   "valor": 0.46
+  },
+  {
+   "temporada": "AMJ",
+   "anio": 2026,
+   "valor": 0.95
+  },
+  {
+   "temporada": "MJJ",
+   "anio": 2026,
+   "valor": 1.39
+  },
+  {
+   "temporada": "JJA",
+   "anio": 2026,
+   "valor": 1.8
+  },
+  {
+   "temporada": "JAS",
+   "anio": 2026,
+   "valor": 2.16
+  },
+  {
+   "temporada": "ASO",
+   "anio": 2026,
+   "valor": 2.46
+  }
+ ],
+ "oni_url": "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt",
+ "fase_actual": "nino",
+ "pronostico": {
+  "publicado": "2026-10-19",
+  "resumen_en": "The October 2026 objective ENSO outlook strongly favors El Niño persisting through boreal spring 2027, with a potential continuation into early summer. El Niño probabilities remain at 100% from OND 2026 through MAM 2027, then ease to 92% in AMJ and 60% in MJJ 2027.",
+  "url": "https://iri.columbia.edu/our-expertise/climate/forecasts/enso/current/",
+  "fase": "nino",
+  "pct": 100,
+  "desde": "OND 2026",
+  "hasta": "MAM 2027"
+ }
+}

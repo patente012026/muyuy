@@ -1,0 +1,11 @@
+{
+  "name": "Muyuy V1.0 – rotaciones con datos de la NASA / crop rotations with NASA data",
+  "short_name": "Muyuy V1.0",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f6f1ea",
+  "theme_color": "#5d4037",
+  "lang": "es",
+  "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+            { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
+}

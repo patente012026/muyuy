@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(function(){var a={};try{a=JSON.parse(localStorage.getItem("muyuy-ajustes"))||{}}catch(e){}window.MUYUY_AJ=a;["letra","contraste","legible"].forEach(function(k){if(a[k])document.documentElement.setAttribute("data-"+k,a[k])})})();</script>
+<!-- siempre en modo claro, igual en el celular y la laptop (ni el modo oscuro del equipo ni el de Chrome cambian los colores) -->
+<meta name="color-scheme" content="only light">
+<title>Muyuy V1.0 · Mapa de comunidades</title>
+<meta name="description" content="Las comunidades campesinas y nativas del Perú, con el clima de NASA Power de cada una">
+<meta name="theme-color" content="#5d4037">
+<link rel="icon" href="icon-96.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="mapa.css">
+</head>
+<body class="mapa-root">
+<header class="top">
+  <div class="brand">
+    <img src="icon-96.png" alt="" width="40" height="40">
+    <div>
+      <h1 data-m="titulo">Muyuy V1.0 · Mapa de comunidades</h1>
+      <p class="tag" data-m="tag">Comunidades campesinas y nativas del Perú, con el clima de la NASA</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <label class="site"><span data-m="idioma">Idioma</span>
+      <select id="lang"><option value="es">Español</option><option value="en">English</option><option value="qu">Runasimi</option></select>
+    </label>
+    <a class="back" href="index.html" id="lnkBack" data-m="volver">← Vista del agricultor</a>
+  </div>
+</header>
+
+<main class="mapa-layout">
+  <aside class="panel-izq">
+    <section class="kpis" id="kpis" aria-live="polite"></section>
+
+    <section class="bloque">
+      <label class="buscar"><span data-m="buscar">Buscar comunidad</span>
+        <input type="search" id="q" autocomplete="off" placeholder="…">
+      </label>
+      <ul class="resultados" id="resultados"></ul>
+    </section>
+
+    <section class="bloque filtros">
+      <h3 data-m="filtros">Filtros</h3>
+      <label class="chk"><input type="checkbox" id="fCamp" checked> <i class="sw camp"></i> <span data-m="campesinas">Comunidades campesinas</span></label>
+      <label class="chk"><input type="checkbox" id="fNat" checked> <i class="sw nat"></i> <span data-m="nativas">Comunidades nativas</span></label>
+      <label class="sel"><span data-m="departamento">Departamento</span> <select id="fDep"></select></label>
+      <h3 data-m="capas">Capas</h3>
+      <label class="chk"><input type="checkbox" id="fDist" checked> <i class="sw dist"></i> <span data-m="distritos">Capitales de distrito (INEI)</span></label>
+      <label class="chk"><input type="checkbox" id="lCeldas"> <i class="sw celda"></i> <span data-m="celdas">Celdas de clima NASA Power</span></label>
+      <label class="chk"><input type="checkbox" id="lSitios" checked> <span class="star">★</span> <span data-m="sitios">Sitios ya calculados en Muyuy</span></label>
+      <label class="chk"><input type="checkbox" id="lSat"> <span data-m="satelite">Imagen satelital</span></label>
+    </section>
+
+    <section class="bloque">
+      <h3 data-m="porDep">Centros poblados por departamento</h3>
+      <div id="chartDep" class="chart-dep"></div>
+      <p class="small" data-m="tipChart">Toque una barra para filtrar.</p>
+    </section>
+
+    <section class="bloque fuente">
+      <p class="small" id="fuente"></p>
+    </section>
+  </aside>
+
+  <section class="mapa-wrap">
+    <div id="map" role="application" aria-label="Mapa de comunidades"></div>
+    <div class="leyenda" id="leyenda"></div>
+    <div class="cargando" id="cargando"><span class="loader-dot"></span> <span data-m="cargando">Cargando 38 737 comunidades…</span></div>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="i18n.js"></script>
+<script src="puntos.js"></script>
+<script src="mapa.js"></script>
+<script src="mapa_capas.js"></script>
+</body>
+</html>
