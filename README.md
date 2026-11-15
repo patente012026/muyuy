@@ -187,4 +187,81 @@ Then open http://localhost:8000.
 
 ---
 
+## 10. Credits and resources
+
+Every external dataset, tool, library and service used to build Muyuy V1.0. All are open or free to use; AI-generated content is labeled where it appears.
+
+### NASA data and resources
+| Resource | Link |
+|---|---|
+| NASA POWER Daily API (AG community) | https://power.larc.nasa.gov/api/temporal/daily/point |
+| NASA POWER Climatology API | https://power.larc.nasa.gov/api/temporal/climatology/point |
+| SRTM 30 m elevation (SRTMGL1) | https://lpdaac.usgs.gov/products/srtmgl1v003/ |
+| MODIS Terra MOD13Q1 vegetation index (ORNL DAAC) | https://modis.ornl.gov/rst/api/v1/MOD13Q1/subset |
+| NASA GIBS imagery (SMAP L4, GPM IMERG, HLS, GEDI layers, Blue Marble) | https://gibs.earthdata.nasa.gov/ |
+| SMAP L3 enhanced soil moisture | https://nsidc.org/data/spl3smp_e |
+| GPM IMERG daily precipitation | https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDL_07/summary |
+| HLS Landsat 30 m (HLSL30) | https://lpdaac.usgs.gov/products/hlsl30v002/ |
+| HLS Sentinel-2 30 m (HLSS30) | https://lpdaac.usgs.gov/products/hlss30v002/ |
+| GEDI L4B aboveground biomass | https://gedi.umd.edu/ |
+| NEX-GDDP-CMIP6 future climate | https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6 |
+| NASA Earthdata Login | https://urs.earthdata.nasa.gov |
+
+### Space agency partner and other data
+| Resource | Link |
+|---|---|
+| ERA5 / ERA5-Land (Copernicus), via Open-Meteo | https://archive-api.open-meteo.com/v1/archive |
+| Copernicus DEM 90 m elevation, via Open-Meteo | https://open-meteo.com/en/docs/elevation-api |
+| SoilGrids 2.0 (ISRIC) | https://rest.isric.org/soilgrids/v2.0/properties/query |
+| OpenLandMap soil data (Hengl et al., 2018) | https://zenodo.org/records/2525663 |
+| OpenTopoData SRTM API | https://api.opentopodata.org/v1/srtm30m |
+| NOAA CPC Oceanic Niño Index (ONI) | https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt |
+| IRI Columbia ENSO forecast | https://iri.columbia.edu/our-expertise/climate/forecasts/enso/current/ |
+| PISCO rainfall, SENAMHI (planned calibration reference) | https://iridl.ldeo.columbia.edu/SOURCES/.SENAMHI/.HSR/.PISCO/ |
+| CHIRPS rainfall (planned calibration reference) | https://www.chc.ucsb.edu/data/chirps |
+| FAO EcoCrop | https://gaez.fao.org/pages/ecocrop |
+| FAO-56 Crop evapotranspiration | https://www.fao.org/4/x0490e/x0490e00.htm |
+| FAO-66 Crop yield response to water | https://www.fao.org/3/i2800e/i2800e.pdf |
+| BDPI, Peru Ministry of Culture (communities) | https://bdpi.cultura.gob.pe/ |
+| Peru Ubigeo dataset (INEI districts) | https://github.com/jmcastagnetto/ubigeo-peru-aumentado |
+| geoBoundaries | https://www.geoboundaries.org/ |
+| SIEA, MIDAGRI (yields) | https://siea.midagri.gob.pe/portal/ |
+| SISAP, MIDAGRI (prices) | https://sistemas.midagri.gob.pe/sisap/portal2/ |
+
+### AI tools (labeled in the app, slides and video)
+| Tool | Use | Link |
+|---|---|---|
+| Claude (Anthropic) | Understands farmer messages (bot) | https://www.anthropic.com/claude |
+| Claude Code | Coding, writing and translation drafts, with human review | https://www.anthropic.com/claude-code |
+| Groq (gpt-oss, Qwen) and Z.ai (GLM) | Chat answers with the farm summary | https://groq.com · https://z.ai |
+| faster-whisper | Voice-note transcription | https://github.com/SYSTRAN/faster-whisper |
+| Piper TTS | Spanish and English app voices | https://github.com/rhasspy/piper |
+| Meta MMS-TTS | Quechua app voice (draft) | https://huggingface.co/docs/transformers/model_doc/mms |
+| ChatGPT (OpenAI) | Illustrations (watermarked) | https://chatgpt.com |
+| ElevenLabs | Video narration and sound effects | https://elevenlabs.io |
+
+### Software, libraries and services
+| Resource | Link |
+|---|---|
+| Python | https://www.python.org |
+| pandas | https://pandas.pydata.org |
+| FastAPI | https://fastapi.tiangolo.com |
+| fpdf2 | https://github.com/py-pdf/fpdf2 |
+| Supabase (chat server) | https://supabase.com |
+| Render (hosting) | https://render.com |
+| Blender (video animation) | https://www.blender.org |
+| Leaflet (maps) | https://leafletjs.com |
+| Lottie (animations) | https://airbnb.io/lottie/ |
+
+### Project materials
+| Material | Link |
+|---|---|
+| Slides (7) | https://docs.google.com/presentation/d/1XgXZnF-bI5WHP3HmZcV2f1Th6NPrS6vd/edit?usp=sharing |
+| 30-second video | https://www.youtube.com/watch?v=qgrn5PfF5tE |
+| Complete technical document | https://docs.google.com/document/d/1c6tZS74QduESmwaEu8bIFEj1sPjIPzCG |
+
+Field photos in the slides are real, taken with the farmers' permission in Chulucanas, Piura. The video music was synthesized by the team.
+
+---
+
 *Muyuy shows what the data say. The farmer decides.*
